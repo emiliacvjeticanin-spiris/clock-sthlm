@@ -3,267 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entré - Glassmorphism Touch</title>
+    <title>Responsive Info Banner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    
     <style>
-        :root {
-            --visma-blue: rgba(0, 114, 195, 0.7); /* Transparent-blå */
-            --glass-bg: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --text-main: #ffffff;
-            --text-dim: rgba(255, 255, 255, 0.7);
-        }
-
-        * {
+        /* Grundinställningar - nu anpassningsbara */
+        body {
             margin: 0;
             padding: 0;
+            width: 100vw; /* Använder 100% av view-width */
+            background-color: #121212; 
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden; /* Förhindrar horisontell scroll */
+        }
+
+        #banner {
+            width: 100%;
+            height: 110px;
+            background: linear-gradient(180deg, rgba(20, 20, 20, 0.95) 0%, rgba(10, 10, 10, 0.9) 100%);
+            backdrop-filter: blur(15px);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 4%; /* Använder procent för padding så det skalar */
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            /* Helt transparent bakgrun */
-            background-color: transparent; 
-            color: var(--text-main);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            height: 100vh;
-            width: 100vw;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        /* En mjuk mörk toning i toppen och botten för att garantera läsbarhet */
-        .overlay-vignette {
-            position: fixed;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            position: fixed; /* Låser bannern högst upp */
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(180deg, 
-                rgba(0,0,0,0.5) 0%, 
-                rgba(0,0,0,0) 40%, 
-                rgba(0,0,0,0) 60%, 
-                rgba(0,0,0,0.6) 100%);
-            z-index: -1;
-            pointer-events: none;
         }
 
-        header {
-            margin-top: 8vh;
-            text-align: center;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
-        }
-
-        header h1 {
-            font-size: clamp(2.2rem, 5vw, 3.8rem);
-            font-weight: 300;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-        }
-
-        header p {
-            color: var(--text-dim);
-            margin-top: 1.5vh;
-            font-size: 1.3rem;
-        }
-
-        /* Glassmorphism Bolagskort */
-        .grid-container {
-            flex-grow: 1;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 25px;
-            width: 88%;
-            margin-top: 6vh;
-            max-height: 45vh;
-        }
-
-        .company-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px); /* Frostad effekt */
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
-        }
-
-        .company-card:active {
-            transform: scale(0.96);
-            background: rgba(255,255,255,0.2);
-        }
-
-        .company-card span {
-            font-weight: 600;
-            font-size: 1.2rem;
-            letter-spacing: 0.5px;
-        }
-
-        /* Glassmorphism Knappar */
-        .footer-actions {
-            width: 100%;
-            padding-bottom: 8vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 25px;
-        }
-
-        .btn {
-            width: 88%;
-            padding: 35px;
-            border: 1px solid var(--glass-border);
-            border-radius: 18px;
-            font-size: 1.5rem;
-            font-weight: 700;
+        .info-group {
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 20px;
-            color: white;
-            cursor: pointer;
-            background: var(--visma-blue);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-            animation: pulse 3s infinite;
+            min-width: 0; /* Förhindrar overflow i flexbox */
         }
 
-        /* Modal / Popup Glass */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 100;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background: rgba(255, 255, 255, 0.95);
-            color: #1a1a1a;
-            width: 90%;
-            padding: 50px;
-            border-radius: 30px;
-            text-align: center;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-        }
-
-        .close-btn {
-            margin-top: 40px;
-            padding: 20px 60px;
-            background: #222;
-            color: white;
-            border-radius: 12px;
-            border: none;
-            font-size: 1.3rem;
-            font-weight: 600;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.2); transform: scale(1); }
-            50% { box-shadow: 0 0 0 15px rgba(255, 255, 255, 0); transform: scale(1.01); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); transform: scale(1); }
-        }
-
-        .hand-hint {
-            margin-top: 15px;
-            font-size: 1.1rem;
-            color: var(--text-dim);
+        #time-container {
             display: flex;
             align-items: center;
-            gap: 10px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            font-size: clamp(32px, 4vw, 52px); /* Texten skalar mellan 32px och 52px beroende på skärm */
+            font-weight: 700;
+            letter-spacing: -1px;
+            white-space: nowrap;
+        }
+
+        #date {
+            font-size: clamp(16px, 1.5vw, 22px); /* Skalbar text för datum */
+            font-weight: 300;
+            color: #ffffff;
+            padding-left: 20px;
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+            height: 30px;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .weather-wrapper {
+            flex-shrink: 1;
+            min-width: 400px;
+            max-width: 400px;
+            /* Vi tar bort 'scale' här eftersom det kan trycka ut widgeten utanför kanten på mindre skärmar */
+        }
+
+        /* Om skärmen är väldigt smal (t.ex. stående läge), dölj datum för att få plats */
+        @media (max-width: 800px) {
+            #date { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <div class="overlay-vignette"></div>
-
-    <header>
-        <h1>Välkommen</h1>
-        <p>Här i huset finns:</p>
-    </header>
-
-    <div class="grid-container">
-        <div class="company-card"><span>Bolag</span></div>
-        <div class="company-card"><span>Bolag</span></div>
-        <div class="company-card"><span>Bolag</span></div>
-        <div class="company-card"><span>Bolag</span></div>
-    </div>
-
-    <div class="footer-actions">
-        <button class="btn" onclick="openModal('parkering')">
-            GÄSTPARKERING
-        </button>
-        <button class="btn" onclick="openModal('wifi')">
-            GÄST-WIFI
-        </button>
-        <div class="hand-hint">👆 Tryck på skärmen för info</div>
-    </div>
-
-    <div id="infoModal" class="modal">
-        <div class="modal-content">
-            <h2 id="modalTitle" style="font-size: 2.5rem; color: #0072c3;">Info</h2>
-            <div id="modalBody" style="margin-top: 25px; font-size: 1.4rem; color: #444;">
-                </div>
-            <button class="close-btn" onclick="closeModal()">STÄNG</button>
+    <div id="banner">
+        <div class="info-group">
+            <div id="time-container">
+                <span id="hour">00</span><span class="separator">:</span><span id="min">00</span>
+            </div>        
+            <div id="date">Laddar datum...</div>
+        </div>
+        
+        <div class="weather-wrapper">
+<a class="weatherwidget-io" href="https://forecast7.com/sv/59d3318d07/stockholm/" data-label_1="STOCKHOLM" data-label_2="WEATHER" data-icons="Climacons Animated" data-mode="Current" data-theme="dark" data-basecolor="" >STOCKHOLM WEATHER</a>
+<script>
+!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
+</script>
         </div>
     </div>
 
     <script>
-        function openModal(typ) {
-            const modal = document.getElementById('infoModal');
-            const title = document.getElementById('modalTitle');
-            const body = document.getElementById('modalBody');
+        function updateClock() {
+            const now = new Date();
+            const days = ['Söndag', 'Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag'];
+            const months = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december'];
             
-            if(typ === 'parkering') {
-                title.innerText = "Gästparkering";
-                body.innerHTML = `
-                    <p>Vi erbjuder fri parkering för våra besökare.</p>
-                    <div style="background: #f4f4f4; padding: 20px; border-radius: 15px; margin: 20px 0;">
-                        <span style="font-size: 0.9rem; color: #666;">ZONKOD</span><br>
-                        <strong style="font-size: 2.5rem; letter-spacing: 2px;">12345</strong>
-                    </div>
-                    <p>Registrera din bil via QR-koden i receptionen.</p>
-                `;
-            } else {
-                title.innerText = "Gäst-WiFi";
-                body.innerHTML = `
-                    <p>Anslut till vårt öppna nätverk:</p>
-                    <div style="padding: 20px; border: 2px dashed #0072c3; border-radius: 15px; margin: 20px 0;">
-                        <strong style="font-size: 2rem; color: #0072c3;">Visma Guest</strong>
-                    </div>
-                    <p>Öppna webbläsaren för att godkänna villkoren och surfa fritt.</p>
-                `;
-            }
+            document.getElementById('hour').textContent = now.getHours().toString().padStart(2, '0');
+            document.getElementById('min').textContent = now.getMinutes().toString().padStart(2, '0');
             
-            modal.style.display = 'flex';
+            const dateText = `${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]}`;
+            document.getElementById('date').textContent = dateText;
         }
-
-        function closeModal() {
-            document.getElementById('infoModal').style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            const modal = document.getElementById('infoModal');
-            if (event.target == modal) {
-                closeModal();
-            }
-        }
+        
+        setInterval(updateClock, 1000);
+        updateClock();
     </script>
 </body>
 </html>
